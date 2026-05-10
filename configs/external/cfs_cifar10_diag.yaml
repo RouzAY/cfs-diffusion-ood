@@ -1,0 +1,52 @@
+# configs/external/cfs_cifar10_diag.yaml
+image_size: 32
+data_image_size: 32
+data_root: ./data
+batch_size: 128
+device: 0
+seed: 1337
+strict_determinism: true
+adapter: improved
+
+backbones:
+  improved:
+    model_path: checkpoints/cifar10_uncond_50M_500K.pt
+    improved_args: {}
+  edm:
+    model_path: checkpoints/edm-cifar10-32x32-uncond-vp.pkl
+    prediction_type: x0
+    in_channels: 3
+    data_range: [-1.0, 1.0]
+    repo_dir: repos/edm-main
+
+eval:
+  id_train: { name: cifar10, split: train, limit: null, download: true }
+  id_test:  { name: cifar10, split: test,  limit: null, download: true }
+  ood:
+    - { name: svhn,     split: test, limit: null, download: true }
+    - { name: celeba,   split: test, limit: null, download: true }
+    - { name: cifar100, split: test, limit: null, download: true }
+    - { name: dtd,      split: test, limit: null, download: true }
+
+cfs:
+  Kc: 1
+  K_grid: 1
+  explicit_lambdas: [7.0]
+  pool_std: true
+  hook_policy: sparse_ed_id
+  region_mode: both      # put "dec_only" for cfs_1x1_dec
+  enc_keep: 1
+  dec_keep: 1
+  head: diag
+  mc_fit: 1
+  mc_test: 1
+  max_fit_batches: 128
+  internal_bs: 64
+  id_probe_batches: 1
+  max_region_candidates: 4
+  sparse_keep_same_res: true
+  id_probe_images: 32
+  id_probe_max_chunks: 4
+  clamp: false
+  eps: 1e-6
+  verbose: true

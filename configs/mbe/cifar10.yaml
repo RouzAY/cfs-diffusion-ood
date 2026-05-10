@@ -1,0 +1,152 @@
+# configs/mbe/cifar10.yaml
+image_size: 32
+data_image_size: 32
+data_root: ./data
+batch_size: 128
+device: 0
+seed: 1337
+strict_determinism: true
+
+adapter: improved
+
+backbones:
+  improved:
+    model_path: checkpoints/cifar10_uncond_50M_500K.pt
+    improved_args: {}
+
+  edm:
+    model_path: checkpoints/edm-cifar10-32x32-uncond-vp.pkl
+    prediction_type: x0
+    in_channels: 3
+    data_range: [-1.0, 1.0]
+    repo_dir: repos/edm-main
+
+  uvit:
+    repo_dir: repos/U-ViT-main
+    config_path: repos/U-ViT-main/configs/cifar10_uvit_small.py
+    nnet_path: checkpoints/cifar10_uvit_small.pth
+    class_label: null
+
+eval:
+  id_train: { name: cifar10, split: train, limit: null, download: true }
+  id_test:  { name: cifar10, split: test,  limit: null, download: true }
+  ood:
+    # - { name: svhn,     split: test, limit: null, download: true }
+    # - { name: celeba,   split: test, limit: null, download: true }
+    - { name: cifar100, split: test, limit: null, download: true }
+    - { name: dtd,      split: test, limit: null, download: true }
+
+cfs:
+  Kc: 1
+  K_grid: 1
+  explicit_lambdas: [5.0]
+  pool_std: true
+  hook_policy: sparse_ed_id
+  transformer_hook_region: early_late
+  region_mode: both     # put "dec_only" for cfs_1x1_dec
+  enc_keep: 1
+  dec_keep: 1
+  head: diag
+  mc_fit: 1
+  mc_test: 1
+  max_fit_batches: 64
+  internal_bs: 64
+  id_probe_batches: 1
+  max_region_candidates: 4
+  sparse_keep_same_res: true
+  id_probe_images: 32
+  id_probe_max_chunks: 4
+  clamp: false
+  clamp_range: [-1.0, 1.0]
+  eps: 1e-6
+  verbose: true
+
+msma:
+  lambda_min: -10.0
+  lambda_max: 5.0
+  Kc: 8
+  K_grid: 200
+  head: gmm
+  standardize: true
+  gmm_components: [2, 4, 6, 8]
+  gmm_covariance: full
+  gmm_max_fit_samples: 20000
+  random_state: 0
+  knn_k: 5
+  max_fit_batches: 64
+  internal_bs: 64
+  use_amp: true
+  explicit_corruption: true
+  shared_eps_across_levels: true
+  clamp: false
+  clamp_range: [-1.0, 1.0]
+  eps: 1e-6
+  verbose: true
+
+diffpath:
+  lambda_min: -10.0
+  lambda_max: 5.0
+  Kc: 8
+  K_grid: 200
+  variant: 6d
+  path_stat: sqmean
+  kde_bandwidth: 0.0
+  mc_val: 1
+  mc_test: 1
+  max_fit_batches: 64
+  internal_bs: 64
+  use_amp: true
+  clamp: false
+  clamp_range: [-1.0, 1.0]
+  eps: 1e-6
+  verbose: true
+
+ddpm_ood:
+  lambda_min: -10.0
+  lambda_max: 5.0
+  Kc: 100
+  K_grid: 200
+  start_skip: 16
+  mc_val: 1
+  mc_test: 1
+  level_norm: zscore
+  robust_mad_scale: 1.4826
+  agg_mode: mean
+  positive_only: false
+  max_fit_batches: 64
+  internal_bs: 64
+  use_amp: true
+  clamp: false
+  clamp_range: [-1.0, 1.0]
+  eps: 1e-6
+  verbose: true
+
+gepc:
+  lambda_min: -10.0
+  lambda_max: 5.0
+  Kc: 2
+  K_grid: 200
+  mc_fit: 1
+  mc_test: 1
+  shared_eps_across_levels: true
+  features: [gepc_s, gepc_s_cos, gepc_x0]
+  metric_default: gepc_s
+  agg_feat: sum
+  agg_t: wmean
+  trim_alpha: 0.10
+  weight_t: inv_cv
+  keep_k: 2
+  density_mode: kde
+  bandwidth: 0.0
+  group_set: flip180
+  group_shifts: false
+  shift_px: 1
+  spatial_pool: topk
+  topk_rho: 0.3
+  max_fit_batches: 64
+  internal_bs: 64
+  use_amp: true
+  clamp: false
+  clamp_range: [-1.0, 1.0]
+  eps: 1e-6
+  verbose: true

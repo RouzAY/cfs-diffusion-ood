@@ -1,0 +1,59 @@
+# configs/external/cfs_cifar10_uvit_diag.yaml
+image_size: 32
+data_image_size: 32
+data_root: ./data
+batch_size: 128
+device: 0
+seed: 1337
+strict_determinism: true
+adapter: uvit
+
+backbones:
+  uvit:
+    repo_dir: repos/U-ViT-main
+    config_path: repos/U-ViT-main/configs/cifar10_uvit_small.py
+    nnet_path: checkpoints/cifar10_uvit_small.pth
+    class_label: null
+
+eval:
+  id_train: { name: cifar10, split: train, limit: null, download: true }
+  id_test:  { name: cifar10, split: test,  limit: null, download: true }
+  ood:
+    - { name: svhn,     split: test, limit: null, download: true }
+    - { name: celeba,   split: test, limit: null, download: true }
+    - { name: cifar100, split: test, limit: null, download: true }
+    - { name: dtd,      split: test, limit: null, download: true }
+
+cfs:
+  Kc: 1
+  K_grid: 1
+  explicit_lambdas: [5.0]
+  pool_std: true
+  hook_policy: sparse_ed
+  transformer_hook_region: early_late
+  head: diag   # knn for knn head
+  mc_fit: 1
+  mc_test: 1
+  max_fit_batches: 64
+  internal_bs: 64
+  clamp: false
+  eps: 1e-6
+  verbose: true
+
+
+naive_recon:
+  Kc: 1
+  K_grid: 1
+  explicit_lambdas: [5.0]
+  unique_levels: true
+  match_mode: logsnr
+  fixed_level_idx: 0
+  mc_val: 1
+  mc_test: 1
+  kde_bandwidth: 0.0
+  max_fit_batches: 64
+  internal_bs: 64
+  use_amp: true
+  clamp: false
+  target: clean
+  verbose: true

@@ -1,0 +1,80 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.venv/
+venv/
+env/
+.conda/
+.python-version
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs / outputs / runs
+logs/
+outputs/
+output/
+runs/
+results/
+wandb/
+tensorboard/
+lightning_logs/
+*.log
+
+# Data
+data/
+datasets/
+raw_data/
+downloads/
+
+# Checkpoints / pretrained models
+checkpoints/
+pretrained/
+models/
+weights/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.hdf5
+*.npz
+*.npy
+*.mat
+*.mdb
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+
+# Temporary files
+*.tmp
+*.bak
+*.old
+.cache/
+.cache*/

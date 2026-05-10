@@ -1,0 +1,103 @@
+# configs/mbe/imagenet1k.yaml
+image_size: 64
+data_image_size: 64
+data_root: ./data
+batch_size: 128
+device: 0
+seed: 1337
+strict_determinism: true
+
+adapter: improved
+
+backbones:
+  improved:
+    model_path: checkpoints/imagenet64_uncond_100M_1500K.pt
+    improved_args: {}
+
+data_root: /path/to/openood_data
+
+eval:
+  id_train:
+    name: imagenet200
+    split: val_train
+    limit: null
+    download: false
+    val_split_seed: 0
+    val_split_ratio: 0.5
+    # Uses data_root/benchmark_imglist/imagenet200/val_imagenet200.txt
+
+  id_test:
+    name: imagenet200
+    split: val_test
+    limit: null
+    download: false
+    val_split_seed: 0
+    val_split_ratio: 0.5
+
+  ood:
+    - { name: ssb_hard, split: test, limit: null, download: false }
+    - { name: ninco,    split: test, limit: null, download: false }
+    - { name: texture,  split: test, limit: null, download: false }
+    
+
+cfs:
+  Kc: 1
+  K_grid: 1
+  explicit_lambdas: [5.0]
+  pool_std: true
+  hook_policy: sparse_ed_id
+  region_mode: both     # put "dec_only" for cfs_1x1_dec
+  enc_keep: 0
+  dec_keep: 1
+  head: diag
+  mc_fit: 1
+  mc_test: 1
+  max_fit_batches: 64
+  internal_bs: 64
+  id_probe_batches: 1
+  max_region_candidates: 4
+  sparse_keep_same_res: true
+  id_probe_images: 32
+  id_probe_max_chunks: 4
+  clamp: false
+  clamp_range: [-1.0, 1.0]
+  eps: 1e-6
+  verbose: true
+
+msma:
+  lambda_min: -10.0
+  lambda_max: 5.0
+  Kc: 10
+  K_grid: 200
+  head: gmm
+  standardize: true
+  gmm_components: [2, 4, 6, 8]
+  gmm_covariance: full
+  gmm_max_fit_samples: 20000
+  random_state: 0
+  knn_k: 5
+  max_fit_batches: 64
+  internal_bs: 64
+  use_amp: true
+  explicit_corruption: true
+  shared_eps_across_levels: true
+  clamp: false
+  eps: 1e-6
+  verbose: true
+
+diffpath:
+  lambda_min: -10.0
+  lambda_max: 5.0
+  Kc: 10
+  K_grid: 200
+  variant: 6d
+  path_stat: sqmean
+  kde_bandwidth: 0.0
+  mc_val: 1
+  mc_test: 1
+  max_fit_batches: 64
+  internal_bs: 64
+  use_amp: true
+  clamp: false
+  eps: 1e-6
+  verbose: true
