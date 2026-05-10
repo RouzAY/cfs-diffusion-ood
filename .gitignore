@@ -41,7 +41,6 @@ lightning_logs/
 
 # Data
 data/
-datasets/
 raw_data/
 downloads/
 
