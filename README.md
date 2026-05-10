@@ -217,9 +217,8 @@ Variants available:
 
 ```
 configs/
-├── mbe/           # Main NeurIPS table (strict fairness)
-├── external/      # CFS variants (not part of MBE)
-├── debug/         # Fast experiments
+├── mbe/           # Main NeurIPS table
+├── external/      # CFS variants
 
 checkpoints/
 
@@ -338,6 +337,7 @@ pip install gdown
 
 Alternatively, download CelebA manually and organize it under your data_root following the structure expected by TorchVision:
 
+```text
 data_root/
 └── celeba/
     ├── img_align_celeba/
@@ -346,6 +346,7 @@ data_root/
     ├── list_bbox_celeba.txt
     ├── list_landmarks_align_celeba.txt
     └── list_eval_partition.txt
+```
 
 ---
 
@@ -369,6 +370,7 @@ We distinguish:
 | CFS      | 1F    |
 | GEPC     | 8F    |
 | DiffPath | 10F   |
+| MSMA     | 10F   |
 | DDPM-OOD | 364F |
 
 ---
